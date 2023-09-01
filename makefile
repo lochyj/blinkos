@@ -2,10 +2,10 @@
 
 # Future: $(shell find . -name '*.c')
 
-C_SOURCES = $(wildcard					\
-				kernel/*.c kernel/lib/*.c kernel/mm/*.c\
-				drivers/tty/*.c			\
-				)
+C_SOURCES = $(wildcard													\
+				kernel/*.c kernel/lib/*.c kernel/mm/*.c kernel/cpu/*.c	\
+				drivers/tty/*.c											\
+			)
 
 ASM_SOURCES = $(wildcard				\
 				kernel/asm/i386/*.asm	\
@@ -53,10 +53,9 @@ run:
 		-usb                                           	\
 		-vga std										\
 		-d int											\
-#		-no-reboot                                     	\
-		-no-shutdown
+		-no-reboot
 
-build: $(ASM_OBJS) $(C_OBJS) link mboot buildiso run
+build: $(ASM_OBJS) $(C_OBJS) link mboot buildiso run clean
 
 clean:
 	rm -f $(C_OBJS)

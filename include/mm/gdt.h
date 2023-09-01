@@ -9,15 +9,15 @@ typedef struct {
     uint8_t accessed;
     uint8_t granularity;
     uint8_t segment_base_high;
-} gdt_entry_t;
+} gdt_entry_t;  // Through testing I dont think this needs to be packed. Please correct me if im wrong
 
 typedef struct {
     uint16_t limit;
-    uint32_t base;
-} gdt_pointer_t;
+    uintptr_t base;
+} __attribute__((packed)) gdt_pointer_t;    // However, this one definitely does...
 
 extern load_gdt(gdt_pointer_t*);
 
-void set_gdt_descriptor(int descriptor, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity);
+void set_gdt_descriptor(int descriptor, uintptr_t base, uint32_t limit, uint8_t access, uint8_t granularity);
 
 void initialise_gdt();
