@@ -16,7 +16,7 @@ typedef struct {
     uintptr_t base;
 } __attribute__((packed)) gdt_pointer_t;    // However, this one definitely does...
 
-extern load_gdt(gdt_pointer_t*);
+extern void load_gdt(gdt_pointer_t*);
 
 void set_gdt_descriptor(int descriptor, uintptr_t base, uint32_t limit, uint8_t access, uint8_t granularity);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string.h>
 
 #include "logging.h"
 #include "asm/i386/ports.h"
@@ -11,7 +12,7 @@ typedef struct {
     uint8_t zero;   // This is always 0
     uint8_t gate_type_attributes;   // Is it a trap type or an interrupt gate. Or a task gate but we wont be using it for that atm.
     uint16_t base_high;
-} idt_entry_t;
+} __attribute__((packed)) idt_entry_t;
 
 // Derived from figure. 9-2 of the 80386 Programmer's Reference
 typedef struct {
@@ -21,10 +22,7 @@ typedef struct {
 
 typedef struct {
     uint32_t ds;
-    uint32_t edi, esi;
-    uint32_t ebp, esp;
-    uint32_t ebx, edx;
-    uint32_t ecx, eax;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
     uint32_t int_no, err_code;              // Interrupt number and error code (if applicable)
     uint32_t eip, cs, eflags, useresp, ss;  // This is pushed by the processor automatically.
 } __attribute__((packed)) registers_t;

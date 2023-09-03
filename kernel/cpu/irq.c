@@ -80,7 +80,9 @@ void irq_handler(registers_t* regs) {
 
 void initialise_idt() {
     idtr.limit = sizeof(idt_entry_t) * 256 - 1;
-    idtr.base = (uintptr_t) &idt;
+    idtr.base = (uint32_t) &idt;
+
+    memset(&idt, 0, sizeof(idt_entry_t) * 256);
 
     // Remapping the PIC
     outb(0x20, 0x11);
@@ -127,6 +129,7 @@ void initialise_idt() {
     set_idt_gate(29, (uint32_t)isr29, 0x08, 0x8E);
     set_idt_gate(30, (uint32_t)isr30, 0x08, 0x8E);
     set_idt_gate(31, (uint32_t)isr31, 0x08, 0x8E);
+
     set_idt_gate(32, (uint32_t)irq0 , 0x08, 0x8E);
     set_idt_gate(33, (uint32_t)irq1 , 0x08, 0x8E);
     set_idt_gate(34, (uint32_t)irq2 , 0x08, 0x8E);

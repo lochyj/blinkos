@@ -17,29 +17,29 @@ disable_interrupts:
 ; Some macros that I didnt write
 
 %macro ISR_NOERRCODE 1
-global isr%1
-isr%1:
-  cli                         ; Disable interrupts firstly.
-  push byte 0                 ; Push a dummy error code.
-  push %1                     ; Push the interrupt number.
-  jmp isr_stub         ; Go to our common handler code.
+  global isr%1
+  isr%1:
+    cli                         ; Disable interrupts firstly.
+    push byte 0                 ; Push a dummy error code.
+    push %1                     ; Push the interrupt number.
+    jmp isr_stub         ; Go to our common handler code.
 %endmacro
 
 %macro ISR_ERRCODE 1
-global isr%1
-isr%1:
-  cli                         ; Disable interrupts.
-  push %1                     ; Push the interrupt number
-  jmp isr_stub
+  global isr%1
+  isr%1:
+    cli                         ; Disable interrupts.
+    push %1                     ; Push the interrupt number
+    jmp isr_stub
 %endmacro
 
 %macro IRQ 2
-global irq%1
-irq%1:
-  cli
-  push byte 0
-  push %2
-  jmp irq_stub
+  global irq%1
+  irq%1:
+    cli
+    push byte 0
+    push %2
+    jmp irq_stub
 %endmacro
 
 ISR_NOERRCODE 0
