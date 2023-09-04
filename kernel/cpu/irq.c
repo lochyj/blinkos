@@ -28,16 +28,15 @@ char* exceptions_0_to_16[] = {
 };
 
 void register_interrupt_handler(uint8_t vector, isr_t handler) {
-    IRQ_clear_mask(vector);
     interrupt_handlers[vector] = handler;
 }
 
-void set_idt_gate(uint8_t gate_index, uintptr_t base, uint16_t selector, uint8_t gate_type_attributes) {
+void set_idt_gate(uint8_t gate_index, uint32_t base, uint16_t selector, uint8_t gate_type_attributes) {
     // 16 bits is equal to 0xFFFF. We firstly remove the first 16 bits that we used for base_low and then mask the last 16 bits for the base_high.
     idt[gate_index].base_low = base & 0xFFFF;
     idt[gate_index].base_high = (base >> 16) & 0xFFFF;
     idt[gate_index].selector = selector;
-    idt[gate_index].zero = 0;
+    idt[gate_index].zero = 0;   // Zero should ALWAYS be 0 no matter what. Don't ask me why, ask the intel engineers.
     idt[gate_index].gate_type_attributes = gate_type_attributes;
 
 }
@@ -56,7 +55,7 @@ void isr_handler(registers_t* regs) {
         } else if (regs->int_no < 32) {
             kprintf("Unhandled reserved interrupt\n");
         } else {
-            kprintf("Unhandled external interrupt: ISR %d\n", regs->int_no);
+            //kprintf("Unhandled external interrupt: ISR %d\n", regs->int_no);
         }
 
     }
@@ -147,29 +146,25 @@ void initialise_idt() {
     set_idt_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     set_idt_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
-    IRQ_clear_all_mask();
+    //IRQ_clear_all_mask();
 
-    load_idt(&idtr);
+    load_idt((uint32_t)&idtr);
 
 }
 
 void IRQ_clear_all_mask() {
     for (int8_t i = 0; i < 16; i++){
-        IRQ_clear_mask(i);
+        uint16_t port;
+        uint8_t value;
+
+        if(i < 8) {
+            port = 0x21;
+        } else {
+            port = 0xA1;
+            i -= 8;
+        }
+
+        value = inb(port) & ~(1 << i);
+        outb(port, value);
     }
-}
-
-void IRQ_clear_mask(uint8_t IRQline) {
-    uint16_t port;
-    uint8_t value;
-
-    if(IRQline < 8) {
-        port = 0x21;
-    } else {
-        port = 0xA1;
-        IRQline -= 8;
-    }
-
-    value = inb(port) & ~(1 << IRQline);
-    outb(port, value);
 }

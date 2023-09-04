@@ -12,24 +12,27 @@ typedef struct {
     uint8_t zero;   // This is always 0
     uint8_t gate_type_attributes;   // Is it a trap type or an interrupt gate. Or a task gate but we wont be using it for that atm.
     uint16_t base_high;
-} __attribute__((packed)) idt_entry_t;
+} idt_entry_t;
 
 // Derived from figure. 9-2 of the 80386 Programmer's Reference
 typedef struct {
-    uint32_t base;
     uint16_t limit;
+    uint32_t base;
 } __attribute__((packed)) idt_ptr_t;    // This needs to be packed
 
 typedef struct {
     uint32_t ds;
-    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    uint32_t edi, esi;
+    uint32_t ebp, esp;
+    uint32_t ebx, edx;
+    uint32_t ecx, eax;
     uint32_t int_no, err_code;              // Interrupt number and error code (if applicable)
     uint32_t eip, cs, eflags, useresp, ss;  // This is pushed by the processor automatically.
-} __attribute__((packed)) registers_t;
+} registers_t;
 
 typedef void (*isr_t)(registers_t *);
 
-extern void load_idt(idt_ptr_t*);
+extern void load_idt(uint32_t);
 
 extern void enable_interrupts();
 extern void disable_interrupts();
@@ -39,12 +42,11 @@ void initialise_idt();
 void irq_handler(registers_t* regs);
 void isr_handler(registers_t* regs);
 
-void set_idt_gate(uint8_t gate_index, uintptr_t base, uint16_t selector, uint8_t gate_type_attributes);
+void set_idt_gate(uint8_t gate_index, uint32_t base, uint16_t selector, uint8_t gate_type_attributes);
 
 void register_interrupt_handler(uint8_t vector, isr_t handler);
 
 void IRQ_clear_all_mask();
-void IRQ_clear_mask(uint8_t IRQline);
 
 // This is a little ugly but its necessary
 extern void isr0();

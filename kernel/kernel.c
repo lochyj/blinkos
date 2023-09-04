@@ -4,14 +4,14 @@
 #include "logging.h"
 #include "mm/gdt.h"
 #include "cpu/irq.h"
+#include "misc/multiboot.h"
 
-// TODO: Get the multiboot.h file from the GRUB source code
-void kmain(void* multiboot_header_pointer, void* stack_pointer, uint32_t header_magic) {
+void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint32_t bootloader_magic) {
 
     initialise_textmode();
 
-    if (header_magic != 0x2BADB002) {
-        log_attribute(LOG_FATAL, "Invalid multiboot header magic number");
+    if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+        log_attribute(LOG_FATAL, "Invalid boot-loader magic number");
     }
 
     initialise_gdt();
@@ -20,25 +20,17 @@ void kmain(void* multiboot_header_pointer, void* stack_pointer, uint32_t header_
     initialise_idt();
     log_attribute(LOG_INFO, "Loaded the IDT");
 
-    enable_interrupts();
+    //enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");
 
+    kprintf("\nEnvironment information:\n");
+    kprintf("Total memory: %dkb;", multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower);
 
     // --------|
     // Testing |
     // --------|
 
-    // Testing the kprintf function:
-    kprintf("Hello, %s!\n", "world");
-    kprintf("The number %d is equal to %x in hex!\n", 42, 42);
-    kprintf("The number %d is equal to %b in binary!\n", 42, 42);
-    kprintf("The number %d is equal to %o in octal!\n", 42, 42);
 
-    // Testing the logging functions:
-    log_attribute(LOG_INFO, "This is an info message");
-    log_attribute(LOG_WARNING, "This is a warning message");
-    log_attribute(LOG_ERROR, "This is an error message");
-    log_attribute(LOG_FATAL, "This is a fatal message");
 
     // We need this here...
     for (;;);
