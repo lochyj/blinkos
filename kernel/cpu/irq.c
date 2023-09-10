@@ -28,6 +28,7 @@ char* exceptions_0_to_16[] = {
 };
 
 void register_interrupt_handler(uint8_t vector, isr_t handler) {
+    IRQ_clear_mask(vector);
     interrupt_handlers[vector] = handler;
 }
 
@@ -60,6 +61,8 @@ void isr_handler(registers_t* regs) {
 
     }
 
+    return;
+
 }
 
 void irq_handler(registers_t* regs) {
@@ -74,6 +77,8 @@ void irq_handler(registers_t* regs) {
         outb(0xA0, 0x20); /* follower */
     }
     outb(0x20, 0x20); /* leader */
+
+    return;
 
 }
 
@@ -146,25 +151,30 @@ void initialise_idt() {
     set_idt_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     set_idt_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
-    //IRQ_clear_all_mask();
+    IRQ_clear_all_mask();
 
     load_idt((uint32_t)&idtr);
+
+    kprintf("IDT ptr location: %x\n", &idtr);
 
 }
 
 void IRQ_clear_all_mask() {
     for (int8_t i = 0; i < 16; i++){
-        uint16_t port;
-        uint8_t value;
-
-        if(i < 8) {
-            port = 0x21;
-        } else {
-            port = 0xA1;
-            i -= 8;
-        }
-
-        value = inb(port) & ~(1 << i);
-        outb(port, value);
+        IRQ_clear_mask(i);
     }
+}
+
+void IRQ_clear_mask(uint8_t IRQline) {
+    uint16_t port;
+    uint8_t value;
+
+    if(IRQline < 8) {
+        port = 0x21;
+    } else {
+        port = 0xA1;
+        IRQline -= 8;
+    }
+    value = inb(port) & ~(1 << IRQline);
+    outb(port, value);
 }

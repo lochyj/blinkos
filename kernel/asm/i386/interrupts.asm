@@ -97,28 +97,11 @@ extern irq_handler
 isr_stub:
   ; push the registers to pass to the function. equal to the registers_t type
   pusha
-  mov ax, ds
-  push eax
-
-  mov ax, 0x10
-  mov ds, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
-
-  push esp
+  cld
   call isr_handler
-  pop eax
-
-  pop eax
-  mov ds, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
-
   popa
 
-  add esp, 8 ; jump past the error code
+  add esp, 8 ; Jump past the error code
   iret
 
 irq_stub:
@@ -145,7 +128,7 @@ irq_stub:
 
   popa
 
-  add esp, 8 ; jump past the error code
+  add esp, 8 ; Jump past the error code
   iret
 
 global isr_stub_table

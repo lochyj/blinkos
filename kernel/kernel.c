@@ -20,7 +20,7 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     initialise_idt();
     log_attribute(LOG_INFO, "Loaded the IDT");
 
-    //enable_interrupts();
+    enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");
 
     kprintf("\nEnvironment information:\n");

@@ -18,15 +18,15 @@ CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -Wno-int-conversion -Wno-un
 ASMFLAGS = -felf32
 BUILD_DIR = ./build
 
-.PHONY: all link mboot buildiso run build clean
+.PHONY: all link mboot buildiso debug run build clean
 
-all: $(ASM_OBJS) $(C_OBJS) link mboot buildiso run clean
+all: debug $(ASM_OBJS) $(C_OBJS) link mboot buildiso run clean
 
 %.out: %.asm
 	nasm $(ASMFLAGS) $< -o $@
 
 %.o: %.c
-	i686-elf-gcc $(CFLAGS) -c $< -o $@
+	i686-elf-gcc -g $(CFLAGS) -c $< -o $@
 
 link:
 	i686-elf-ld -T linker.ld $(ASM_OBJS) $(C_OBJS) -o $(BUILD_DIR)/BlinkOS.bin
@@ -42,12 +42,17 @@ buildiso:
 
 	grub2-mkrescue -o $(BUILD_DIR)/image/BlinkOS.iso $(BUILD_DIR)/iso
 
+debug:
+	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex\"break kmain\" -ex \"continue\"")
+
 run:
+
 	qemu-system-i386                                 	\
+		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
+		-s -S                                          	\
 		-accel tcg,thread=single                       	\
 		-cpu core2duo                                  	\
 		-m 128                                         	\
-		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
 		-monitor stdio                                 	\
 		-smp 1                                         	\
 		-usb                                           	\

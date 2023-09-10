@@ -47,6 +47,7 @@ void set_idt_gate(uint8_t gate_index, uint32_t base, uint16_t selector, uint8_t 
 void register_interrupt_handler(uint8_t vector, isr_t handler);
 
 void IRQ_clear_all_mask();
+void IRQ_clear_mask(uint8_t IRQline);
 
 // This is a little ugly but its necessary
 extern void isr0();
