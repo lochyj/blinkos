@@ -1,5 +1,6 @@
 #include "cpu/irq.h"
 
+__attribute((aligned(0x10)))
 isr_t interrupt_handlers[256];
 
 __attribute((aligned(0x10)))

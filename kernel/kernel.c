@@ -33,5 +33,6 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
 
 
     // We need this here...
-    for (;;);
+    for (;;)
+        asm("nop");
 }
