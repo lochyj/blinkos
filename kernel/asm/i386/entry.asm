@@ -56,4 +56,5 @@ _start:
 	extern kmain
 	call kmain
 
-	jmp $
+lp:
+	jmp lp

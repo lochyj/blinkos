@@ -5,6 +5,7 @@
 
 #include "logging.h"
 #include "asm/i386/ports.h"
+#include "types.h"
 
 typedef struct {
     uint16_t base_low;
@@ -48,6 +49,9 @@ void register_interrupt_handler(uint8_t vector, isr_t handler);
 
 void IRQ_clear_all_mask();
 void IRQ_clear_mask(uint8_t IRQline);
+
+void IRQ_set_mask(uint8_t IRQline);
+void IRQ_set_all_mask();
 
 // This is a little ugly but its necessary
 extern void isr0();

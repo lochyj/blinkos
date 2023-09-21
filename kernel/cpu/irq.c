@@ -45,7 +45,7 @@ void set_idt_gate(uint8_t gate_index, uint32_t base, uint16_t selector, uint8_t 
 
 void isr_handler(registers_t* regs) {
 
-    if (interrupt_handlers[regs->int_no] != 0) {
+    if (interrupt_handlers[regs->int_no] != NULL) {
 
         isr_t handler = interrupt_handlers[regs->int_no];
         handler(regs);
@@ -57,7 +57,7 @@ void isr_handler(registers_t* regs) {
         } else if (regs->int_no < 32) {
             kprintf("Unhandled reserved interrupt\n");
         } else {
-            //kprintf("Unhandled external interrupt: ISR %d\n", regs->int_no);
+            kprintf("Unhandled external interrupt: ISR %d\n", regs->int_no);
         }
 
     }
@@ -152,18 +152,40 @@ void initialise_idt() {
     set_idt_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     set_idt_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
-    IRQ_clear_all_mask();
+    IRQ_set_all_mask();
+
+    for (int i = 0; i < 256; i ++) {
+        interrupt_handlers[i] = NULL;
+    }
 
     load_idt((uint32_t)&idtr);
 
-    kprintf("IDT ptr location: %x\n", &idtr);
+}
 
+void IRQ_set_all_mask() {
+    for (int8_t i = 0; i < 16; i++){
+        IRQ_set_mask(i);
+    }
 }
 
 void IRQ_clear_all_mask() {
     for (int8_t i = 0; i < 16; i++){
         IRQ_clear_mask(i);
     }
+}
+
+void IRQ_set_mask(uint8_t IRQline) {
+    uint16_t port;
+    uint8_t value;
+
+    if(IRQline < 8) {
+        port = 0x21;
+    } else {
+        port = 0xA1;
+        IRQline -= 8;
+    }
+    value = inb(port) | (1 << IRQline);
+    outb(port, value);
 }
 
 void IRQ_clear_mask(uint8_t IRQline) {
