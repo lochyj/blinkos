@@ -4,7 +4,7 @@
 
 C_SOURCES = $(wildcard													\
 				kernel/*.c kernel/lib/*.c kernel/mm/*.c kernel/cpu/*.c	\
-				drivers/tty/*.c											\
+				drivers/tty/*.c	drivers/input/*.c						\
 			)
 
 ASM_SOURCES = $(wildcard				\
@@ -42,14 +42,11 @@ buildiso:
 
 	grub2-mkrescue -o $(BUILD_DIR)/image/BlinkOS.iso $(BUILD_DIR)/iso
 
-debug:
-
 run:
-	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex \"break kmain\" -ex \"continue\"")
+#	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex \"break kmain\" -ex \"continue\"")
 
 	qemu-system-i386                                 	\
 		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
-		-s -S                                          	\
 		-accel tcg,thread=single                       	\
 		-cpu core2duo                                  	\
 		-m 128                                         	\
@@ -59,6 +56,7 @@ run:
 		-vga std										\
 		-d int											\
 		-no-reboot
+#		-s -S                                          	\
 
 clean:
 	rm -f $(C_OBJS)

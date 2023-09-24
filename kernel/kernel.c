@@ -5,6 +5,7 @@
 #include "mm/gdt.h"
 #include "cpu/irq.h"
 #include "misc/multiboot.h"
+#include "drivers/input/keyboard.h"
 
 void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint32_t bootloader_magic) {
 
@@ -20,11 +21,14 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     initialise_idt();
     log_attribute(LOG_INFO, "Loaded the IDT");
 
+    register_keyboard_driver();
+    log_attribute(LOG_INFO, "Loaded the keyboard driver");
+
     enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");
 
     kprintf("\nEnvironment information:\n");
-    kprintf("Total memory: %dkb;", multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower);
+    kprintf("Total memory: %dkb;\n", multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower);
 
     // --------|
     // Testing |

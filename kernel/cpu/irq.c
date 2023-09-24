@@ -28,6 +28,30 @@ char* exceptions_0_to_16[] = {
     "Coprocessor error",                        // 16
 };
 
+/* Wikipedia page on IRQ's:
+Master PIC
+
+    IRQ 0 – system timer (cannot be changed)
+    IRQ 1 – keyboard on PS/2 port (cannot be changed)
+    IRQ 2 – cascaded signals from IRQs 8–15 (any devices configured to use IRQ 2 will actually be using IRQ 9)
+    IRQ 3 – serial port controller for serial port 2 (shared with serial port 4, if present)
+    IRQ 4 – serial port controller for serial port 1 (shared with serial port 3, if present)
+    IRQ 5 – parallel port 3 or sound card
+    IRQ 6 – floppy disk controller
+    IRQ 7 – parallel port 1 (shared with parallel port 2, if present). It is used for printers or for any parallel port if a printer is not present. It can also be potentially be shared with a secondary sound card with careful management of the port.
+
+Slave PIC
+
+    IRQ 8 – real-time clock (RTC)
+    IRQ 9 – Advanced Configuration and Power Interface (ACPI) system control interrupt on Intel chipsets.[3] Other chipset manufacturers might use another interrupt for this purpose, or make it available for the use of peripherals (any devices configured to use IRQ 2 will actually be using IRQ 9)
+    IRQ 10 – The Interrupt is left open for the use of peripherals (open interrupt/available, SCSI or NIC)
+    IRQ 11 – The Interrupt is left open for the use of peripherals (open interrupt/available, SCSI or NIC)
+    IRQ 12 – mouse on PS/2 port
+    IRQ 13 – CPU co-processor or integrated floating point unit or inter-processor interrupt (use depends on OS)
+    IRQ 14 – primary ATA channel (ATA interface usually serves hard disk drives and CD drives)
+    IRQ 15 – secondary ATA channel
+*/
+
 void register_interrupt_handler(uint8_t vector, isr_t handler) {
     IRQ_clear_mask(vector);
     interrupt_handlers[vector] = handler;
@@ -38,7 +62,7 @@ void set_idt_gate(uint8_t gate_index, uint32_t base, uint16_t selector, uint8_t 
     idt[gate_index].base_low = base & 0xFFFF;
     idt[gate_index].base_high = (base >> 16) & 0xFFFF;
     idt[gate_index].selector = selector;
-    idt[gate_index].zero = 0;   // Zero should ALWAYS be 0 no matter what. Don't ask me why, ask the intel engineers.
+    idt[gate_index].zero = 0;   // Zero should ALWAYS be 0 no matter what. This is reserved for intel to do what they like with.
     idt[gate_index].gate_type_attributes = gate_type_attributes;
 
 }
@@ -68,16 +92,22 @@ void isr_handler(registers_t* regs) {
 
 void irq_handler(registers_t* regs) {
 
+    // Debugging lol.
+    //kprintf("IRQ: %d\r", regs->int_no);
+
     // Call the function at the index of the interrupt number
-    if (interrupt_handlers[regs->int_no] != 0) {
+    if (interrupt_handlers[regs->int_no] != NULL) {
         isr_t handler = interrupt_handlers[regs->int_no];
         handler(regs);
     }
 
-    if (regs->int_no >= 40) {
-        outb(0xA0, 0x20); /* follower */
+    // Signal to the PIC that the interrupt is finished...
+
+    if (regs->int_no >= IRQ8) { // If the interrupt came from the slave PIC
+        outb(0xA0, 0x20);
     }
-    outb(0x20, 0x20); /* leader */
+
+    outb(0x20, 0x20);
 
     return;
 
@@ -152,8 +182,6 @@ void initialise_idt() {
     set_idt_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     set_idt_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
-    IRQ_set_all_mask();
-
     for (int i = 0; i < 256; i ++) {
         interrupt_handlers[i] = NULL;
     }
@@ -191,7 +219,7 @@ void IRQ_set_mask(uint8_t IRQline) {
 void IRQ_clear_mask(uint8_t IRQline) {
     uint16_t port;
     uint8_t value;
-
+ 
     if(IRQline < 8) {
         port = 0x21;
     } else {
