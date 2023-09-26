@@ -92,7 +92,7 @@ void isr_handler(registers_t* regs) {
 
 void irq_handler(registers_t* regs) {
 
-    // Debugging lol.
+    // Debugging...
     //kprintf("IRQ: %d\r", regs->int_no);
 
     // Call the function at the index of the interrupt number
