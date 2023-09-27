@@ -27,11 +27,17 @@ void shutdown(int hardware) {
             // Something went wrong...
             break;
     }
+
+    // We shouldn't ever get here... but just in case
+    asm volatile("hlt");
+    asm volatile("jmp .");
+
 }
 
 void shutdown_acpi() {
     // TODO
     // This may take alot of work...
+    return;
 }
 
 // This also works for older versions of QEMU

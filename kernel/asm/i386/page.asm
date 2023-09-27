@@ -1,5 +1,3 @@
-
-
 global load_page_directory
 load_page_directory:
     mov eax, [esp + 4]  ; Get the physical address of the page directory that is passed to us.
