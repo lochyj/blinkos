@@ -10,7 +10,7 @@ void init_heap(uint32_t heap_base) {
 
 // The dumb kmalloc.
 // TODO: test if this works. It should in theory. (it may not lol)
-uintptr_t dkmalloc(uint32_t size, uint32_t align) {
+uint32_t dkmalloc(uint32_t size, uint32_t align) {
     uint32_t size_aligned;
 
     if (heap_head % align == 0) {

@@ -44,7 +44,7 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     log_attribute(LOG_INFO, "Enabled interrupts");
 
     kprintf("\nEnvironment information:\n");
-    kprintf("Total memory: %dkb;\n", multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower);
+    kprintf("Total memory: %dMB;\n", (multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower) / 1024);
     kprintf("Bootloader: %s;\n", (char*) multiboot_header_pointer->boot_loader_name);
     kprintf("Command line: %s;\n", (char*) multiboot_header_pointer->cmdline);
 

@@ -4,6 +4,9 @@
 
 #include "types.h"
 #include "mm/kmalloc.h"
+#include <string.h>
+
+typedef uint32_t pte_t;
 
 // Page Table Entry (PTE) bit positions
 enum {
