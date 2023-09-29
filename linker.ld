@@ -5,7 +5,7 @@ OUTPUT_FORMAT("elf32-i386")
 SECTIONS {
 	/* Begin putting sections at 1 MiB, a conventional place for kernels to be
 	   loaded at by the bootloader. */
-	. = 1M;
+	. = 0x100000;
 
 	/* The multiboot header needs to be first so that the bootloader recognises the kernel as being multiboot */
 	.text BLOCK(4K) : ALIGN(4K) {
@@ -28,7 +28,7 @@ SECTIONS {
 		*(.bss)
 	}
 
-	end = .;
+	kernel_end = .;
 
     /* Remove all of the useless information */
 	/DISCARD/ : {

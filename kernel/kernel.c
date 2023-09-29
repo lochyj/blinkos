@@ -10,7 +10,7 @@
 #include "mm/page.h"
 #include "mm/kmalloc.h"
 
-uint32_t heap_location;
+extern uint32_t kernel_end;
 
 void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint32_t bootloader_magic) {
 
@@ -24,7 +24,7 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
         return; // This will never return... Hopefully.
     }
 
-    heap_location = 0x100000;
+    uint32_t heap_location = kernel_end;
 
     initialise_textmode();
 
@@ -35,7 +35,7 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     log_attribute(LOG_INFO, "Loaded the IDT");
 
     init_heap(heap_location);
-    log_attribute(LOG_INFO, "Loaded the Heap at temp location");
+    log_attribute(LOG_INFO, "Loaded the Heap at the end of the kernel");
 
     register_keyboard_driver();
     log_attribute(LOG_INFO, "Loaded the keyboard driver");

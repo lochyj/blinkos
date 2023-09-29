@@ -49,7 +49,7 @@ run:
 		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
 		-accel tcg,thread=single                       	\
 		-cpu core2duo                                  	\
-		-m 1024                                        	\
+		-m 4G                                        	\
 		-monitor stdio                                 	\
 		-smp 1                                         	\
 		-usb                                           	\
