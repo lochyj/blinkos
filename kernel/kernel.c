@@ -12,12 +12,11 @@
 
 extern uint32_t kernel_end;
 
+#define ALIGN_TO_4MIB(addr) (((addr) + (4 * 1024 * 1024 - 1)) & ~(4 * 1024 * 1024 - 1))
+
 void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint32_t bootloader_magic) {
 
     if (bootloader_magic != MULTIBOOT_BOOTLOADER_MAGIC) {
-        initialise_textmode();
-        log_attribute(LOG_FATAL, "Invalid boot-loader magic number");
-
         // Just assume we are using QEMU for now...
         shutdown(QEMU);
 
@@ -39,6 +38,13 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
 
     register_keyboard_driver();
     log_attribute(LOG_INFO, "Loaded the keyboard driver");
+
+    // In theory after this is done... everything will go to shit hopefully because that means paging was enabled
+    uintptr_t PD = map_kernel();
+
+    load_page_directory((uintptr_t) PD);
+
+    for (;;);
 
     enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");

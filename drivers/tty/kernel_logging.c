@@ -84,6 +84,10 @@ void kprintf(char* fmt, ...) {
                     itoa(va_arg(args, int), buffer, 10);
                     kprint(buffer);
                     break;
+                case 'u':
+                    itoa(va_arg(args, uint32_t), buffer, 10);
+                    kprint(buffer);
+                    break;
                 case 'x':
                     itoa(va_arg(args, int), buffer, 16);
                     kprint(buffer);

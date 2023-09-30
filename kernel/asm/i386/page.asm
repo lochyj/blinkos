@@ -1,7 +1,5 @@
 global load_page_directory
 load_page_directory:
-    mov eax, [esp + 4]  ; Get the physical address of the page directory that is passed to us.
-    mov cr3, eax        ; Move the physical address of the page dir into the cr3 register.
 
     mov eax, cr4        ; Get the value of the cr4 register.
     or eax, 0x00000010  ; Set the PSE bit in cr4. (Page Size Extensions)
@@ -11,4 +9,9 @@ load_page_directory:
     or eax, 0x80000000  ; Set the paging bit in cr0.
     mov cr0, eax        ; Write the new value of cr0 back to the register. (With paging enabled.)
 
-    ret                 ; Paging is enabled now. :)
+    mov eax, [esp + 4]  ; Get the physical address of the page directory that is passed to us.
+    mov cr3, eax        ; Move the physical address of the page dir into the cr3 register.
+
+    jmp $               ; Paging is enabled now. :)
+
+    ; TODO: figure out how to return to the kernel that is now loaded into 0xC0000000

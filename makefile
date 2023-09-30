@@ -43,11 +43,12 @@ buildiso:
 	grub2-mkrescue -o $(BUILD_DIR)/image/BlinkOS.iso $(BUILD_DIR)/iso
 
 run:
-#	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex \"break kmain\" -ex \"continue\"")
+	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex \"break kmain\" -ex \"continue\"")
 
 	qemu-system-i386                                 	\
 		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
 		-accel tcg,thread=single                       	\
+		-s -S                                          	\
 		-cpu core2duo                                  	\
 		-m 4G                                        	\
 		-monitor stdio                                 	\
@@ -56,7 +57,6 @@ run:
 		-vga std										\
 		-d int											\
 		-no-reboot
-#		-s -S                                          	\
 
 clean:
 	rm -f $(C_OBJS)

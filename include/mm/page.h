@@ -8,10 +8,9 @@
 #include "cpu/irq.h"
 
 // 4MiB page frame size aligned address
-// This may not work... i need to get clarification on the 4 MiB alignment before I go doing this sort of stuff...
-#define PAGE_ALIGN(addr) ((((uint32_t)(addr)) & 0xFFFFC000) + 0x4000)
+#define ALIGN_TO_4MIB(addr) (((addr) + (4 * 1024 * 1024 - 1)) & ~(4 * 1024 * 1024 - 1))
 
-typedef uint32_t pte_t;
+typedef uint32_t pde_t;
 
 // Page Table Entry (PTE) bit positions
 enum {
@@ -37,4 +36,6 @@ enum {
 // Address of the page directory
 extern void load_page_directory(uintptr_t);
 
+uintptr_t map_kernel(void);
 
+void page_fault_handler(registers_t* regs);
