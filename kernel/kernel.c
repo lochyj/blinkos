@@ -42,9 +42,7 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     // In theory after this is done... everything will go to shit hopefully because that means paging was enabled
     uintptr_t PD = map_kernel();
 
-    load_page_directory((uintptr_t) PD);
-
-    for (;;);
+    // load_page_directory((uintptr_t) PD);
 
     enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");
