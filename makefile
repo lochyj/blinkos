@@ -51,6 +51,7 @@ run:
 		-accel tcg,thread=single                       	\
 		-cpu core2duo                                  	\
 		-m 4G                                        	\
+#		-s -S                                          	\
 		-monitor stdio                                 	\
 		-smp 1                                         	\
 		-usb                                           	\
@@ -58,7 +59,6 @@ run:
 		-d int											\
 		-no-reboot
 
-#		-s -S                                          	\
 
 
 clean:

@@ -8,34 +8,30 @@
 #include "cpu/irq.h"
 
 // 4MiB page frame size aligned address
-#define ALIGN_TO_4MIB(addr) (((addr) + (4 * 1024 * 1024 - 1)) & ~(4 * 1024 * 1024 - 1))
+#define ALIGN_TO_4MiB(addr) \
+    (((addr) + 0x3FFFFF) & ~0x3FFFFF)
 
-typedef uint32_t pde_t;
+// Define page directory entry structure (4MB pages)
+typedef struct page_directory_entry {
+    uint32_t present : 1;          // directory present in memory
+    uint32_t writable : 1;         // directory is writable
+    uint32_t user_accessible : 1;  // directory is accessible from user mode
+    uint32_t page_size : 1;        // 4MB page directory flag
+    uint32_t accessed : 1;         // directory has been accessed (set by hardware)
+    uint32_t dirty : 1;            // directory has been written to (set by hardware)
+    uint32_t reserved : 1;         // Reserved for future use
+    uint32_t global : 1;           // Global directory (not flushed from TLB on task switch)
+    uint32_t available : 3;        // Available for system software use
+    uint32_t base_address : 20;    // 4MB directory base address
+} page_directory_entry_t;
 
-// Page Table Entry (PTE) bit positions
-enum {
-    PRESENT = 0,
-    READ_WRITE = 1,
-    USER_SUPERVISOR = 2,
-    WRITE_THROUGH = 3,
-    CACHE_DISABLED = 4,
-    ACCESSED = 5,
-    DIRTY = 6,
-    PAGE_SIZE = 7,
-    GLOBAL = 8,
-    AVAILABLE = 9,
-    AVAILABLE_END = 11,
-    PAGE_ATTRIBUTE_TABLE = 12,
-    LOW_FRAME_BEGIN = 13,
-    LOW_FRAME_END = 20,
-    RSVD = 21, // I have no idea what this bit does...
-    HIGH_FRAME_BEGIN = 22,
-    HIGH_FRAME_END = 31
-};
+typedef struct page_directory {
+    page_directory_entry_t entries[1024];  // 1024 page directory entries
+} page_directory_t;
 
-// Address of the page directory
-extern void load_page_directory(uintptr_t);
 
-uintptr_t map_kernel(void);
+void switch_page_directory(page_directory_t* directory);
+
+void init_paging();
 
 void page_fault_handler(registers_t* regs);
