@@ -9,10 +9,11 @@ void switch_page_directory(page_directory_t* directory) {
 
 void init_paging() {
 
-    page_directory_t* kernel_directory = (page_directory_t*) dkmalloc(sizeof(page_directory_t), 4096);
+    page_directory_t* kernel_directory = (page_directory_t*) dkmalloc(sizeof(page_directory_t), true);
+    kprintf("Kernel directory at 0x%x\n", kernel_directory);
     memset(kernel_directory, 0, sizeof(page_directory_t));
 
-    page_directory_entry_t* entry = &kernel_directory[0];
+    page_directory_entry_t* entry = &kernel_directory->entries[0];
 
     entry->present = 1;
     entry->writable = 1;
@@ -26,6 +27,8 @@ void init_paging() {
     entry->base_address = 0;
 
     // TODO: make a way to easily map other addresses.
+
+    register_interrupt_handler(14, page_fault_handler);
 
     asm volatile("mov %0, %%cr3" : : "r" (kernel_directory));
 

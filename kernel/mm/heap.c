@@ -8,26 +8,20 @@ void init_heap(uint32_t heap_base) {
     heap_head = heap_begin;
 }
 
-// The dumb kmalloc.
-// TODO: test if this works. It should in theory. (it may not lol)
-uint32_t dkmalloc(uint32_t size, uint32_t align) {
-    uint32_t size_aligned;
+// 4MiB page frame size aligned address
+#define ALIGN_TO_4MiB(addr) \
+    (((addr) + 0x3FFFFF) & ~0x3FFFFF)
 
-    if (heap_head % align == 0) {
+// The dumb kmalloc. A better version is underway.
+uint32_t dkmalloc(uint32_t size, bool align) {
+    
+    if (align) {
 
-        size_aligned = size;
+        size = ALIGN_TO_4MiB(size);
 
-    } else {
-        // There is definitely a better way of doing this...
-        // get the next aligned address from heap_head that aligns with align
-        while (size_aligned + heap_head % align != 0) {
-            size_aligned += 1;
-        }
-
-        size_aligned += size;
     }
 
-    uint32_t alloc_base = heap_head;
+    uint32_t alloc_base = ALIGN_TO_4MiB(heap_head);
 
     heap_head += size;
 

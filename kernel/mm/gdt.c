@@ -20,8 +20,8 @@ void initialise_gdt() {
     set_gdt_descriptor(0, 0, 0, 0, 0);  // Empty descriptor. See Figure 5-5 at https://css.csail.mit.edu/6.858/2019/readings/i386.pdf
     set_gdt_descriptor(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);   // Code
     set_gdt_descriptor(2, 0, 0xFFFFFFFF, 0x92, 0xCF);   // Data
-    set_gdt_descriptor(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);   // User mode code - For the future
-    set_gdt_descriptor(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);   // User mode data - For the future
+    // set_gdt_descriptor(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);   // User mode code - For the future
+    // set_gdt_descriptor(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);   // User mode data - For the future
 
     load_gdt(&gdt_pointer);
 }

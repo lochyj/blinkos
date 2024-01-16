@@ -7,10 +7,6 @@
 #include "mm/kmalloc.h"
 #include "cpu/irq.h"
 
-// 4MiB page frame size aligned address
-#define ALIGN_TO_4MiB(addr) \
-    (((addr) + 0x3FFFFF) & ~0x3FFFFF)
-
 // Define page directory entry structure (4MB pages)
 typedef struct page_directory_entry {
     uint32_t present : 1;          // directory present in memory
