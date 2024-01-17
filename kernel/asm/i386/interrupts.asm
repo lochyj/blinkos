@@ -96,53 +96,50 @@ extern irq_handler
 
 isr_stub:
   ; push the registers to pass to the function. equal to the registers_t type
-	pusha
-	mov ax, ds
-	push eax
-	mov ax, 0x10
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-
-  push esp ; push registers_t *r pointer
+  pusha
+  push ds
+  push es
+  push fs
+  push gs
+  mov ax, 0x10 ; Kernel data segment descriptor
+  mov ds, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+  mov eax, esp   ; push registers_t *r pointer
+  push eax
 	call isr_handler
-	pop eax ; clear pointer afterwards
-
-	pop eax
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-	popa
-
-  add esp, 8 ; Jump past the error code
-  iret
+  pop eax
+  pop gs
+  pop fs
+  pop es
+  pop ds
+  popa
+  add esp, 8     ; Cleans up the pushed error code and pushed ISR number
+  iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
 
 irq_stub:
   ; push the registers to pass to the function. equal to the registers_t type
   pusha
-  mov ax, ds
-  push eax
-
+  push ds
+  push es
+  push fs
+  push gs
   mov ax, 0x10
   mov ds, ax
   mov es, ax
   mov fs, ax
   mov gs, ax
-
-  push esp
+  mov eax, esp
+  push eax
   call irq_handler
-  pop ebx
-
-  pop ebx
-  mov ds, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
-
+  call eax
+  pop eax
+  pop gs
+  pop fs
+  pop es
+  pop ds
   popa
-
   add esp, 8 ; Jump past the error code
   iret
 

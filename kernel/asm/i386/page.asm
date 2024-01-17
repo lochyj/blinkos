@@ -12,6 +12,6 @@ load_page_directory:
     mov eax, [esp + 4]  ; Get the physical address of the page directory that is passed to us.
     mov cr3, eax        ; Move the physical address of the page dir into the cr3 register.
 
-    jmp $               ; Paging is enabled now. :)
+    ret
+    ; jmp $               ; Paging is enabled now. :)
 
-    ; TODO: figure out how to return to the kernel that is now loaded into 0xC0000000

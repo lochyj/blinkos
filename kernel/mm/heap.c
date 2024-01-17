@@ -14,7 +14,7 @@ void init_heap(uint32_t heap_base) {
 
 // The dumb kmalloc. A better version is underway.
 uint32_t dkmalloc(uint32_t size, bool align) {
-    
+
     if (align) {
 
         size = ALIGN_TO_4MiB(size);

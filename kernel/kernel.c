@@ -36,10 +36,11 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
     init_heap(heap_location);
     log_attribute(LOG_INFO, "Loaded the Heap at the end of the kernel");
 
+    init_paging();
+    log_attribute(LOG_INFO, "Setup paging");
+
     register_keyboard_driver();
     log_attribute(LOG_INFO, "Loaded the keyboard driver");
-
-    init_paging();
 
     enable_interrupts();
     log_attribute(LOG_INFO, "Enabled interrupts");

@@ -46,18 +46,21 @@ run:
 # Uncomment for debugger.
 	$(shell gnome-terminal -- bash -c "gdb -ex \"target remote localhost:1234\" -ex \"symbol-file $(BUILD_DIR)/BlinkOS.bin\" -ex \"break kmain\" -ex \"continue\"")
 
-	qemu-system-i386                                 	\
+	qemu-system-x86_64                                 	\
 		-drive format=raw,media=cdrom,file=$(BUILD_DIR)/image/BlinkOS.iso\
-		-accel tcg,thread=single                       	\
 		-cpu core2duo                                  	\
 		-m 4G                                        	\
 		-monitor stdio                                 	\
-		-s -S                                          	\
 		-smp 1                                         	\
 		-usb                                           	\
 		-vga std										\
 		-d int											\
-		-no-reboot
+		-no-shutdown									\
+		-no-reboot										\
+		-s -S
+
+#		-accel tcg										\
+#		-accel tcg,thread=single                       	\
 
 
 
