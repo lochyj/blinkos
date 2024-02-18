@@ -12,7 +12,7 @@
 
 extern uint32_t kernel_end;
 
-#define ALIGN_TO_4MIB(addr) (((addr) + (4 * 1024 * 1024 - 1)) & ~(4 * 1024 * 1024 - 1))
+// #define ALIGN_TO_4MIB(addr) (((addr) + (4 * 1024 * 1024 - 1)) & ~(4 * 1024 * 1024 - 1))
 
 void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint32_t bootloader_magic) {
 
@@ -23,27 +23,21 @@ void kmain(multiboot_info_t* multiboot_header_pointer, void* stack_pointer, uint
         return; // This will never return... Hopefully.
     }
 
-    uint32_t heap_location = kernel_end;
+    // uint32_t heap_location = kernel_end;
 
     initialise_textmode();
 
     initialise_gdt();
     log_attribute(LOG_INFO, "Loaded the GDT");
 
-    initialise_idt();
-    log_attribute(LOG_INFO, "Loaded the IDT");
+    // initialise_idt();
+    // log_attribute(LOG_INFO, "Loaded the IDT");
 
-    init_heap(heap_location);
-    log_attribute(LOG_INFO, "Loaded the Heap at the end of the kernel");
+    // register_keyboard_driver();
+    // log_attribute(LOG_INFO, "Loaded the keyboard driver");
 
-    init_paging();
-    log_attribute(LOG_INFO, "Setup paging");
-
-    register_keyboard_driver();
-    log_attribute(LOG_INFO, "Loaded the keyboard driver");
-
-    enable_interrupts();
-    log_attribute(LOG_INFO, "Enabled interrupts");
+    // enable_interrupts();
+    // log_attribute(LOG_INFO, "Enabled interrupts");
 
     kprintf("\nEnvironment information:\n");
     kprintf("Total memory: %dMB;\n", (multiboot_header_pointer->mem_upper - multiboot_header_pointer->mem_lower) / 1024);

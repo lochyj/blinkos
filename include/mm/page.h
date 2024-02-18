@@ -26,10 +26,10 @@ typedef struct page_directory_entry {
 } page_directory_entry_t;
 
 typedef struct page_directory {
-    page_directory_entry_t entries[1024];  // 1024 page directory entries
+    uint32_t entries[1024];  // 1024 page directory entries
 } page_directory_t;
 
-extern load_page_directory(page_directory_t* directory);
+extern load_page_directory(uint32_t);
 
 void switch_page_directory(page_directory_t* directory);
 
